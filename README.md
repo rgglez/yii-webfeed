@@ -4,7 +4,7 @@ WebFeed is a Yii 1.1 extension which provides generetors for [ATOM](https://en.w
 
 ## Installation and usage
 
-Please visit the extension page [here](https://www.yiiframework.com/extension/webfeed)
+Please visit the extension page [here](https://www.yiiframework.com/extension/webfeed).
 
 ## License
 
