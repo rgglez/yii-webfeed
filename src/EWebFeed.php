@@ -36,18 +36,6 @@
  * 
  */
 
-// RSS feeds (most people use this)
-require_once(dirname(__FILE__).'/generators/rss/2/RSS_0_91.php');
-require_once(dirname(__FILE__).'/generators/rss/2/RSS_0_92.php');
-require_once(dirname(__FILE__).'/generators/rss/2/RSS_0_93.php');
-require_once(dirname(__FILE__).'/generators/rss/2/RSS_2_0.php');
-
-// ATOM feeds (also very popular)
-require_once(dirname(__FILE__).'/generators/atom/Atom_1_0.php');
-
-// RDF based feeds (few people use this)
-require_once(dirname(__FILE__).'/generators/rss/1/RSS_1_0.php');
-
 /**
  * EWebFeed is a Yii module which generates RSS and Atom web feeds.
  *
@@ -139,103 +127,40 @@ class EWebFeed implements Iterator
 
    public static $specification;
 
-   public static $validRSSSpecifications = array(
-                                                 RSS_0_91=>'RSS_0_91',
-                                                 RSS_0_92=>'RSS_0_92',
-                                                 RSS_0_93=>'RSS_0_93',
-                                                 RSS_2_0=>'RSS_2_0',
-                                                 RSS_1_0=>'RSS_1_0',
-                                                );
+   public static $validRSSSpecifications = [
+      RSS_0_91=>'RSS_0_91',
+      RSS_0_92=>'RSS_0_92',
+      RSS_0_93=>'RSS_0_93',
+      RSS_2_0=>'RSS_2_0',
+      RSS_1_0=>'RSS_1_0',
+   ];
 
-   public static $validAtomSpecifications = array(
-                                                 ATOM_1_0=>'ATOM_1_0',
-                                                 );
+   public static $validAtomSpecifications = [
+      ATOM_1_0=>'ATOM_1_0',
+   ];
 
-   public static $validDeprecatedSchemes = array('http', 'ftp');
+   public static $validDeprecatedSchemes = ['http', 'ftp'];
 
-   public static $validRDFSchemes = array('http', 'https', 'ftp', 'mailto');
+   public static $validRDFSchemes = ['http', 'https', 'ftp', 'mailto'];
 
    /**
     * @link http://www.iana.org/assignments/uri-schemes.html
     *
     * @var array
     */
-   public static $validIANASchemes = array(
-                                             'aaa',
-                                             'aaas',
-                                             'acap',
-                                             'cap',
-                                             'cid',
-                                             'crid',
-                                             'data',
-                                             'dav',
-                                             'dict',
-                                             'dns',
-                                             'fax',
-                                             'file',
-                                             'ftp',
-                                             'go',
-                                             'gopher',
-                                             'h323',
-                                             'http',
-                                             'https',
-                                             'iax',
-                                             'icap',
-                                             'im',
-                                             'imap',
-                                             'info',
-                                             'ipp',
-                                             'iris',
-                                             'iris.beep',
-                                             'iris.xpc',
-                                             'iris.xpcs',
-                                             'iris.lwz',
-                                             'ldap',
-                                             'mailto',
-                                             'mid',
-                                             'modem',
-                                             'msrp',
-                                             'msrps',
-                                             'mtqp',
-                                             'mupdate',
-                                             'news',
-                                             'nfs',
-                                             'nntp',
-                                             'opaquelocktoken',
-                                             'pop',
-                                             'pres',
-                                             'rtsp',
-                                             'service',
-                                             'shttp',
-                                             'sip',
-                                             'sips',
-                                             'snmp',
-                                             'soap.beep',
-                                             'soap.beeps',
-                                             'tag',
-                                             'tel',
-                                             'telnet',
-                                             'tftp',
-                                             'thismessage',
-                                             'tip',
-                                             'tv',
-                                             'urn',
-                                             'vemmi',
-                                             'xmlrpc.beep',
-                                             'xmlrpc.beeps',
-                                             'xmpp',
-                                             'z39.50r',
-                                             'z39.50s',
-                                             'afs',
-                                             'dtn',
-                                             'mailserver',
-                                             'pack',
-                                             'tn3270',
-                                             'prospero',
-                                             'snews',
-                                             'videotex',
-                                             'wais',
-                                            );
+   public static $validIANASchemes = ['aaa', 'aaas', 'acap', 'cap', 'cid',
+      'crid', 'data', 'dav', 'dict', 'dns', 'fax', 'file', 'ftp', 'go',
+      'gopher', 'h323', 'http', 'https', 'iax', 'icap', 'im', 'imap',
+      'info', 'ipp', 'iris', 'iris.beep', 'iris.xpc', 'iris.xpcs',
+      'iris.lwz', 'ldap', 'mailto', 'mid', 'modem', 'msrp', 'msrps',
+      'mtqp', 'mupdate', 'news', 'nfs', 'nntp', 'opaquelocktoken',
+      'pop', 'pres', 'rtsp', 'service', 'shttp', 'sip', 'sips',
+      'snmp', 'soap.beep', 'soap.beeps', 'tag', 'tel', 'telnet',
+      'tftp', 'thismessage', 'tip', 'tv', 'urn', 'vemmi', 'xmlrpc.beep',
+      'xmlrpc.beeps', 'xmpp', 'z39.50r', 'z39.50s', 'afs', 'dtn',
+      'mailserver', 'pack', 'tn3270', 'prospero', 'snews', 'videotex',
+      'wais',
+   ];
 
    //***************************************************************************
    // Constructor
@@ -253,10 +178,34 @@ class EWebFeed implements Iterator
          throw new CException(Yii::t('EWebFeed', 'Parameter must be a subclass of EWebFeedChannel and implement IFeedGenerator'));
       $this->channel = $channel;
       $class = get_class($this->channel);
-      if (in_array($class, self::$validRSSSpecifications))
+      if (in_array($class, self::$validRSSSpecifications)) {
          self::$specification = self::$validRSSSpecifications[$class];
-      elseif (in_array($class, self::$validAtomSpecifications))
+         switch (self::$specification) {
+            // RDF based feeds (few people use this)
+            case 'RSS_1_0':               
+               require_once(dirname(__FILE__).'/generators/rss/1/RSS_1_0.php');
+               break;
+            
+            // RSS feeds (most people use these)
+            case 'RSS_2_0':
+               require_once(dirname(__FILE__).'/generators/rss/2/RSS_2_0.php');
+            
+            case 'RSS_0_93':
+               require_once(dirname(__FILE__).'/generators/rss/2/RSS_0_93.php');
+
+            case 'RSS_0_92':
+               require_once(dirname(__FILE__).'/generators/rss/2/RSS_0_92.php');
+
+            case 'RSS_0_91':
+               require_once(dirname(__FILE__).'/generators/rss/2/RSS_0_91.php');
+               break;
+         }
+      }
+      elseif (in_array($class, self::$validAtomSpecifications)) {
+         // ATOM feeds (also very popular)
+         require_once(dirname(__FILE__).'/generators/atom/Atom_1_0.php');
          self::$specification = self::$validAtomSpecifications[$class];
+      }
    }
 
    //***************************************************************************
